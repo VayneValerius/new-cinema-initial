@@ -1,8 +1,15 @@
-//import javax.persistence.EntityManager;
+package com.qa.cinema.buisness.repository;
+
+import java.util.List;
+
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.transaction.*;
 
-@Transactional(SUPPORTS)
+import com.qa.cinema.model.Movie;
+
+@Transactional(Transactional.TxType.SUPPORTS)
 public class MovieServiceDBImpl {
 	
 	@PersistenceContext(unitName = "primary")
@@ -13,25 +20,27 @@ public class MovieServiceDBImpl {
     }
 	
 	public List<Movie> findAllMovies() {
-        TypedQuery<Movie> query = em.createQuery("SELECT * FROM Movie", Movie.class);
+        TypedQuery<Movie> query = manager.createQuery("SELECT m FROM Movie m ORDER BY m.title", Movie.class);
         return query.getResultList();
     }
 
 	
-	@Transactional(REQUIRED)
-	public Movie createMovie(Movie movie) {
+	@Transactional(Transactional.TxType.REQUIRED) 
+	public String createMovie(Movie movie) {
 		manager.persist(movie);
-		return movie
+		return "Movie Added";
 	}
 	
-	@Transactional(REQUIRED)
-	public Movie deleteMovie(Long id) {
-		manager.remove(id));
+	@Transactional(Transactional.TxType.REQUIRED) 
+	public String deleteMovie(Long id) {
+		manager.remove(id);
+		return "{\"message\": \"Movie sucessfully deleted\"}";
 	}
 	
-	@Transactional(REQUIRED)
-	public Movie updateMovie(Movie originalMovie, Movie newMovie) {
+	@Transactional(Transactional.TxType.REQUIRED) 
+	public String updateMovie(Movie originalMovie, Movie newMovie) {
 		newMovie = manager.merge(originalMovie);
+		return "{\"message\": \"Movie sucessfully Updated\"}";
 	}
 	
 
